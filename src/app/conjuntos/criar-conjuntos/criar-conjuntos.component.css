@@ -1,0 +1,73 @@
+.form-card {
+  max-width: 100%;
+  padding-bottom: 800px;
+  padding-top: 10px;
+}
+
+.criar-conteiner {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+}
+
+.criar-form {
+  text-align: center;
+  padding: 10px;
+}
+
+.button {
+  margin: 5px;
+}
+
+.example-headers-align .mat-expansion-panel-header-title,
+.example-headers-align .mat-expansion-panel-header-description {
+  flex-basis: 0;
+}
+
+.example-headers-align .mat-expansion-panel-header-description {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.example-headers-align .mat-form-field + .mat-form-field {
+  margin-left: 8px;
+}
+
+.container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+.mat-sidenav {
+  width: 200px;
+  background-color: lightgray;
+}
+
+.form-criacao {
+  display: block;
+  text-align: center;
+  margin: 10px;
+
+}
+
+.formulario-criacao {
+  display: inline-block;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+}
+
+.example-headers-align {
+  justify-self: center;
+}
+
+mat-spinner {
+  margin: auto;
+}

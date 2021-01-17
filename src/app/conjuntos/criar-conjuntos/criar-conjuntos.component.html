@@ -1,0 +1,453 @@
+<mat-sidenav-container class="container">
+  <mat-sidenav class="sidenav" #sidenav mode="side" [(opened)]="opened" (opened)="events.push('open!')"
+               (closed)="events.push('close!')">
+    <app-nav-menu></app-nav-menu>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="content">
+
+
+    <mat-toolbar color="primary">
+      <button mat-button> <mat-icon (click)="sidenav.toggle()">menu</mat-icon></button>
+      <span>Inventus</span>
+      <span class="example-spacer"></span>
+
+      <button mat-icon-button class="login-icon" aria-label="icone login">
+          <mat-icon routerLink="/login">login</mat-icon>
+      </button>
+
+      <button mat-icon-button class="home-icon" aria-label="icone home">
+        <mat-icon routerLink="/">home</mat-icon>
+      </button>
+
+      <button mat-icon-button class="logout-icon" aria-label="icone logout">
+        <mat-icon routerLink="/criar">power_settings_new</mat-icon>
+      </button>
+
+
+
+    </mat-toolbar>
+
+
+
+
+
+  <mat-spinner *ngIf="isLoading"></mat-spinner>
+  <div class="form-criacao">
+  <form (submit)="onSaveConjunto(conjuntoForm)" #conjuntoForm="ngForm" class="formulario-criacao" *ngIf="!isLoading">
+
+<mat-accordion class="example-headers-align">
+  <mat-expansion-panel [expanded]="step === 0" (opened)="setStep(0)" hideToggle>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Informações do conjunto
+      </mat-panel-title>
+      <mat-panel-description>
+        Digite o nome e a descrição do conjunto de dados
+        <mat-icon>info</mat-icon>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <mat-form-field>
+      <mat-label>Título</mat-label>
+      <input
+      matInput
+      type="text"
+      name="titulo"
+      [ngModel]="conjunto?.titulo"
+      required
+      #titulo="ngModel">
+      <mat-error *ngIf="titulo.invalid">Por favor, insira o título do conjunto.</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Descrição</mat-label>
+      <textarea
+      matInput
+      rows="6"
+      name="descricao"
+      [ngModel]="conjunto?.descricao"
+      required></textarea>
+    </mat-form-field>
+    <mat-action-row>
+      <button mat-button color="primary" type="button" (click)="nextStep()">Próximo</button>
+    </mat-action-row>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel [expanded]="step === 1" (opened)="setStep(1)" hideToggle>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Origem
+      </mat-panel-title>
+      <mat-panel-description>
+        Defina a origem do conjunto
+        <mat-icon>trip_origin</mat-icon>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <mat-form-field>
+      <mat-label>Origem</mat-label>
+      <mat-select name="origem"
+      [ngModel]="conjunto?.origem">
+        <mat-option value="Origem" rows="6">Origem</mat-option>
+        <mat-option value="Interno" rows="6">Interno</mat-option>
+        <mat-option value="Externo"rows="6">Externo</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Setor ou Entidade responsável</mat-label>
+      <input
+      matInput
+      name="setorEntidadeResponsavel"
+      [ngModel]="conjunto?.setorEntidadeResponsavel">
+    </mat-form-field>
+
+    <mat-action-row>
+      <button mat-button color="warn" type="button" (click)="prevStep()">Voltar</button>
+      <button mat-button color="primary" type="button" (click)="nextStep()">Próximo</button>
+    </mat-action-row>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel [expanded]="step === 2" (opened)="setStep(2)" hideToggle>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Formato e Conexão
+      </mat-panel-title>
+      <mat-panel-description>
+        Preencha com o formato do conjunto e sua respectiva conexão.
+        <mat-icon>settings_input_component</mat-icon>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <mat-form-field>
+      <mat-label>Formato </mat-label>
+      <mat-hint align="start"><strong>Ex: TXT, WebService, XML, JSON, SGBD Relacional, etc</strong> </mat-hint>
+      <input
+      matInput
+      type="text"
+      name="formato"
+      [ngModel]="conjunto?.formato"
+      required
+      #formato="ngModel">
+      <mat-error *ngIf="formato.invalid">Por favor, insira o formato do conjunto.</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Conexão</mat-label>
+        <mat-hint align="start"><strong>Ex: Servidor (Nome e IP), Pasta, URL de acesso, Banco de Dados, Base
+          Schema, etc</strong> </mat-hint>
+      <textarea
+      matInput
+      rows="6"
+      name="conexao"
+      [ngModel]="conjunto?.conexao"
+      required></textarea>
+    </mat-form-field>
+    <br><br>
+    <mat-action-row>
+      <button mat-button color="warn" type="button" (click)="prevStep()">Voltar</button>
+      <button mat-button color="primary" type="button" (click)="nextStep()">Próximo</button>
+    </mat-action-row>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel [expanded]="step === 3" (opened)="setStep(3)" hideToggle>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Abrangência Temporal
+      </mat-panel-title>
+      <mat-panel-description>
+        Informe o tempo contemplado pelo Conjunto de Dados
+        <mat-icon>date_range</mat-icon>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <mat-form-field>
+
+
+      <mat-label>Entre com a abrangência temporal do conjunto</mat-label>
+      <mat-date-range-input [rangePicker]="picker"
+      name="abrangenciaTemporal"
+      [ngModel]="conjunto?.abrangenciaTemporal">
+        <input matStartDate placeholder="De" >
+        <input matEndDate placeholder="Até">
+      </mat-date-range-input>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-date-range-picker #picker startView="year" [startAt]="startDate"></mat-date-range-picker>
+
+      <input
+      matInput
+      [matDatepicker]="picker" (focus)="picker.open()" readonly
+      name="abrangenciaTemporal"
+      [ngModel]="conjunto?.abrangenciaTemporal">
+    </mat-form-field>
+    <mat-datepicker #picker></mat-datepicker>
+
+    <mat-action-row>
+      <button mat-button color="warn" type="button" (click)="prevStep()">Voltar</button>
+      <button mat-button color="primary" type="button" (click)="nextStep()">Próximo</button>
+    </mat-action-row>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel [expanded]="step === 4" (opened)="setStep(4)" hideToggle>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Frequência de Atualização e Volumes
+      </mat-panel-title>
+      <mat-panel-description>
+        Defina com qual frequência o conjunto de dados deve ser atualizado e seu volume.
+        <mat-icon>storage</mat-icon>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <mat-form-field>
+      <mat-label>Frequência de Atualização</mat-label>
+      <mat-select name="freqAtt"
+      [ngModel]="conjunto?.freqAtt">
+        <mat-option value="Frequência de Atualização" rows="6">Frequência de Atualização</mat-option>
+        <mat-option value="Tempo Real" rows="6">Tempo Real</mat-option>
+        <mat-option value="Diária"rows="6">Diária</mat-option>
+        <mat-option value="Semanal"rows="6">Semanal</mat-option>
+        <mat-option value="Mensal"rows="6">Mensal</mat-option>
+        <mat-option value="Trimestral"rows="6">Trimestral</mat-option>
+        <mat-option value="Anual"rows="6">Anual</mat-option>
+        <mat-option value="Sob Demanda"rows="6">Sob Demanda</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Volume </mat-label>
+      <mat-hint align="start"><strong>Uma estimativa da quantidade de registros do conjunto</strong> </mat-hint>
+      <input
+      matInput
+      name="volume"
+      [ngModel]="conjunto?.volume">
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Volume de Atualização </mat-label>
+      <mat-hint align="start"><strong>Tamanho estimado em cada atualização do conjunto</strong> </mat-hint>
+      <input
+      matInput
+      name="volumeAtt"
+      [ngModel]="conjunto?.volumeAtt">
+    </mat-form-field>
+
+    <mat-action-row>
+      <button mat-button color="warn" type="button" (click)="prevStep()">Voltar</button>
+      <button mat-button color="primary" type="button" (click)="nextStep()">Próximo</button>
+    </mat-action-row>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel [expanded]="step === 5" (opened)="setStep(5)" hideToggle>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Sigilo e Status
+      </mat-panel-title>
+      <mat-panel-description>
+        Defina qual sigilo e status do conjunto de dados.
+        <mat-icon>lock</mat-icon>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <mat-form-field>
+      <mat-label>Sigilo</mat-label>
+      <mat-select name="sigilo"
+      [ngModel]="conjunto?.sigilo">
+        <mat-option value="Sigilo" rows="6">Sigilo</mat-option>
+        <mat-option value="Público" rows="6">Público</mat-option>
+        <mat-option value="Restrito"rows="6">Restrito</mat-option>
+        <mat-option value="Secreto"rows="6">Secreto</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Status</mat-label>
+      <mat-select name="status"
+      [ngModel]="conjunto?.status">
+        <mat-option value="Sigilo" rows="6">Sigilo</mat-option>
+        <mat-option value="Candidata" rows="6">Candidata</mat-option>
+        <mat-option value="Disponibilizada"rows="6">Disponibilizada</mat-option>
+        <mat-option value="Carregada"rows="6">Carregada</mat-option>
+        <mat-option value="Publicada provisoriamente"rows="6">Publicada provisoriamente</mat-option>
+        <mat-option value="Publicada"rows="6">Publicada</mat-option>
+      </mat-select>
+      <mat-hint align="start">
+        <strong>Candidata:</strong> ainda não foi solicitada ou não disponibilizada pela Origem; <br>
+        <strong>Disponibilizada:</strong> solicitada e disponibilizada pela Origem, porém não
+        foram criados os mecanismos de coleta e armazenamento; <br>
+        <strong>Carregada:</strong> os dados foram extraídos e armazenados, mas ainda não foi
+        estruturada ou publicada para uso de terceiros; <br>
+        <strong>Publicada provisoriamente:</strong> os dados foram disponibilizados, mas ainda
+        deve ser estruturada e armazenada em local adequado; <br>
+        <strong>Publicada:</strong> conjunto de dados estruturado e disponível para uso de terceiros.
+
+
+      </mat-hint>
+    </mat-form-field>
+    <br><br><br><br><br><br><br><br><br>
+    <mat-action-row>
+      <button mat-button color="warn" type="button" (click)="prevStep()">Voltar</button>
+      <button mat-button color="primary" type="button" (click)="nextStep()">Próximo</button>
+    </mat-action-row>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel [expanded]="step === 6" (opened)="setStep(6)" hideToggle>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Software e Armazenamento
+      </mat-panel-title>
+      <mat-panel-description>
+        Informe o software de acesso e o tipo de armazenamento
+        <mat-icon>pie_chart</mat-icon>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <mat-form-field>
+      <mat-label>Software de Acesso</mat-label>
+      <input
+      matInput
+      type="text"
+      name="software"
+      [ngModel]="conjunto?.software"
+      required
+      #software="ngModel">
+      <mat-hint align="start"><strong>Ex: SAS VA, API, CKAN, SAS Guide, QlikView, Banco de Dados, Arquivos</strong> </mat-hint>
+      <mat-error *ngIf="software.invalid">Por favor, insira o software de acesso.</mat-error>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Armazenamento</mat-label>
+      <mat-select name="armazenamento"
+      [ngModel]="conjunto?.armazenamento">
+        <mat-option value="Armazenamento" rows="6">Armazenamento</mat-option>
+        <mat-option value="Diretório" rows="6">Diretório</mat-option>
+        <mat-option value="Dados Curados"rows="6">Dados Curados</mat-option>
+        <mat-option value="Sandbox"rows="6">Sandbox</mat-option>
+        <mat-option value="Base Analítica"rows="6">Base Analítica</mat-option>
+      </mat-select>
+      <mat-hint align="start"><strong>Indica em que dispositivo de dados da Arquitetura o CD está
+        armazenado</strong></mat-hint>
+    </mat-form-field>
+
+    <br>
+    <br>
+    <mat-action-row>
+      <button mat-button color="warn" type="button" (click)="prevStep()">Voltar</button>
+      <button mat-button color="primary" type="button" (click)="nextStep()">Próximo</button>
+    </mat-action-row>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel [expanded]="step === 7" (opened)="setStep(7)" hideToggle>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Público-alvo
+      </mat-panel-title>
+      <mat-panel-description>
+        Informe quem pode acessar o conjunto de dados
+        <mat-icon>account_circle</mat-icon>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <mat-form-field>
+      <mat-label>Público-Alvo</mat-label>
+      <textarea
+      matInput
+      rows="6"
+      name="publicoAlvo"
+      [ngModel]="conjunto?.publicoAlvo"
+      required></textarea>
+      <mat-hint align="start"><strong>Ex: Sociedade, TCE/CE, Setor A, Setor B, etc.</strong></mat-hint>
+    </mat-form-field>
+
+    <br>
+    <br>
+    <mat-action-row>
+      <button mat-button color="warn" type="button" (click)="prevStep()">Voltar</button>
+      <button mat-button color="primary" type="button" (click)="nextStep()">Próximo</button>
+    </mat-action-row>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel [expanded]="step === 8" (opened)="setStep(8)" hideToggle>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Dicionário de Dados e Acordo de Cooperação
+      </mat-panel-title>
+      <mat-panel-description>
+        Informe os links para o dicionário de dados e para o acordo de cooperação
+        <mat-icon>link</mat-icon>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <mat-form-field>
+      <mat-label>Dicionário de Dados</mat-label>
+      <input
+      matInput
+      rows="6"
+      name="dicionarioDeDados"
+      [ngModel]="conjunto?.dicionarioDeDados"
+      required>
+      <mat-hint align="start"><strong>Link para o arquivo ou página do dicionário de dados do conjunto</strong></mat-hint>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Acordo de Cooperação</mat-label>
+      <input
+      matInput
+      rows="6"
+      name="acordoDeCooperacao"
+      [ngModel]="conjunto?.acordoDeCooperacao"
+      required>
+      <mat-hint align="start"><strong>Link para o arquivo do acordo de cooperação relativo ao conjunto</strong></mat-hint>
+    </mat-form-field>
+
+    <br>
+    <br>
+    <mat-action-row>
+      <button mat-button color="warn" type="button" (click)="prevStep()">Voltar</button>
+      <button mat-button color="primary" type="button" (click)="nextStep()">Próximo</button>
+    </mat-action-row>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel [expanded]="step === 9" (opened)="setStep(9)" hideToggle>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Comentários
+      </mat-panel-title>
+      <mat-panel-description>
+        Espaço para comentários diversos a respeito do conjunto de dados
+        <mat-icon>chat</mat-icon>
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <mat-form-field>
+      <mat-label>Comentários</mat-label>
+      <textarea
+      matInput
+      rows="6"
+      name="comentarios"
+      [ngModel]="conjunto?.comentarios"
+      required></textarea>
+
+    </mat-form-field>
+
+    <br>
+    <br>
+    <mat-action-row>
+      <button mat-button color="warn" type="button" (click)="prevStep()">Voltar</button>
+      <button mat-button color="primary" type="button" (click)="nextStep()">Ok</button>
+    </mat-action-row>
+  </mat-expansion-panel>
+
+
+</mat-accordion>
+
+<hr>
+  <button mat-raised-button color="primary" class="button" type="submit">Salvar</button>
+  <button mat-raised-button color="warn" class="button">Cancelar</button>
+
+</form>
+</div>
+
+</mat-sidenav-content>
+</mat-sidenav-container>

@@ -1,0 +1,61 @@
+<mat-sidenav-container class="container">
+  <mat-sidenav class="sidenav" #sidenav mode="side" [(opened)]="opened" (opened)="events.push('open!')"
+               (closed)="events.push('close!')">
+    <app-nav-menu></app-nav-menu>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+
+
+    <mat-toolbar color="primary">
+      <button mat-button> <mat-icon (click)="sidenav.toggle()">menu</mat-icon></button>
+      <span>Inventus</span>
+      <span class="example-spacer"></span>
+
+      <button mat-icon-button class="login-icon" aria-label="icone login">
+        <mat-icon routerLink="/login">login</mat-icon>
+    </button>
+
+    <button mat-icon-button class="home-icon" aria-label="icone home">
+      <mat-icon routerLink="/">home</mat-icon>
+    </button>
+
+    <button mat-icon-button class="logout-icon" aria-label="icone logout">
+      <mat-icon routerLink="/criar">power_settings_new</mat-icon>
+    </button>
+
+    </mat-toolbar>
+
+
+
+
+
+
+<mat-spinner *ngIf="isLoading"></mat-spinner>
+<div class="listar-conjuntos">
+<mat-accordion multi="true" class="lista-conjuntos" *ngIf="conjuntos.length > 0 && !isLoading">
+  <mat-expansion-panel *ngFor="let conjunto of conjuntos"
+                       (opened)="panelOpenState = true"
+                       (closed)="panelOpenState = false">
+<mat-expansion-panel-header>
+<mat-panel-title>
+{{conjunto.titulo}}
+</mat-panel-title>
+<mat-panel-description>
+Clique para ver os detalhes de {{conjunto.titulo}}.
+</mat-panel-description>
+</mat-expansion-panel-header>
+<p>{{conjunto.descricao}}</p>
+<mat-action-row>
+  <a mat-button color="accent" [routerLink]="['/editar', conjunto.id]">Editar</a>
+  <button mat-button color="warn" type="button" (click)="onDelete(conjunto.id)">Excluir</button>
+</mat-action-row>
+</mat-expansion-panel>
+</mat-accordion>
+<mat-paginator [length]="totalConjuntos" [pageSize]="conjuntosPerPage" [pageSizeOptions]="pageSizeOptions" (page)="onChangedPage($event)" *ngIf="conjuntos.length > 0"></mat-paginator>
+
+<p *ngIf="conjuntos.length <= 0 && !isLoading">Nenhum conjunto foi cadastrado até o momento.</p>
+
+</div>
+</mat-sidenav-content>
+</mat-sidenav-container>
